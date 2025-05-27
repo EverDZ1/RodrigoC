@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carta para Mamá</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #FDE6F2;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .contenedor {
+            position: absolute;
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -75%);
+            z-index: 10;
+        }
+        .boton {
+            background-color: #964B00;
+            color: #FFFFFF;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 36px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .carta {
+            display: none;
+            width: 600px;
+            height: 0;
+            background-color: #FFB6C1;
+            border: 5px double #FF69B4;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: height 1s;
+        }
+        .mensaje {
+            font-size: 40px;
+            color: #964B00;
+            text-align: center;
+            margin-top: 70px;
+        }
+        .corazon {
+            color: red;
+            animation: latir 1s infinite;
+        }
+        .boton-emergencia {
+            display: none;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #FF0000;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+            font-size: 30px;
+            margin: 30px auto;
+            box-shadow: 0 5px #660000;
+            transition: all 0.1s;
+            animation: pulso-boton 1s infinite;
+        }
+        .boton-emergencia.presionado {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+        #nombre {
+            font-size: 60px;
+            font-family: 'Pacifico', cursive;
+            color: #FF69B4;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            min-height: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 4px solid #FF69B4;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes latir {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulso-boton {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes aparecer-nombre {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #FF69B4; }
+        }
+
+        .confeti {
+            position: fixed;
+            top: -10px;
+            pointer-events: none;
+            animation-name: caer;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        .cuadrado {
+            border-radius: 3px;
+        }
+
+        .corazon-confeti {
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes caer {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="contenedor">
+        <div id="nombre"></div>
+        <button class="boton" id="abrir-carta">Abrir carta</button>
+        <div class="carta" id="carta">
+            <div class="mensaje">Felicidades a todas las madres del grupo <span class="corazon">&hearts;</span></div>
+            <button class="boton-emergencia" id="boton-emergencia">PRESS</button>
+        </div>
+    </div>
+    <script>
+        const boton = document.getElementById("abrir-carta");
+        const carta = document.getElementById("carta");
+        const botonEmergencia = document.getElementById("boton-emergencia");
+        const nombre = document.getElementById("nombre");
+        const nombres = [
+            "Mamita Evelia",
+            "Tia Mireya",
+            "Tia Julia",
+            "Primita Valeria",
+            "Tia Hilda",
+            "Tia Irma",
+            "Tia Sandra"
+        ];
+        let indice = 0;
+
+        const colores = ['#FF69B4', '#FF1493', '#DB7093', '#C71585', '#FF4500', '#FF69B4', '#FF6347'];
+
+        function crearCorazon(color) {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("class", "confeti corazon-confeti");
+            svg.setAttribute("viewBox", "0 0 32 29.6");
+            svg.style.fill = color;
+            svg.style.position = 'fixed';
+            svg.style.top = '-10px';
+            svg.style.pointerEvents = 'none';
+
+            const path = document.createElementNS(svgNS, "path");
+            path.setAttribute("d", "M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.7,0,8.3,0C3.7,0,0,3.7,0,8.3 c0,7.2,9.5,13.9,15.5,21.3c6-7.4,15.5-14.1,15.5-21.3C31,3.7,27.3,0,23.6,0z");
+            svg.appendChild(path);
+
+            return svg;
+        }
+
+        function crearConfeti() {
+            const tipo = Math.random() < 0.5 ? "cuadrado" : "corazon";
+            const color = colores[Math.floor(Math.random() * colores.length)];
+            if (tipo === "cuadrado") {
+                const confeti = document.createElement('div');
+                confeti.classList.add('confeti', 'cuadrado');
+                confeti.style.backgroundColor = color;
+                confeti.style.left = Math.random() * window.innerWidth + 'px';
+                confeti.style.width = confeti.style.height = (10 + Math.random() * 15) + 'px';
+                confeti.style.animationDuration = (3 + Math.random() * 2) + 's';
+                confeti.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(confeti);
+
+                setTimeout(() => {
+                    confeti.remove();
+                }, 6000);
+            } else {
+                const corazon = crearCorazon(color);
+                corazon.style.left = Math.random() * window.innerWidth + 'px';
+                corazon.style.width = corazon.style.height = (20 + Math.random() * 15) + 'px';
+                corazon.style.animationDuration = (3 + Math.random() * 2) + 's';
+                corazon.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(corazon);
+
+                setTimeout(() => {
+                    corazon.remove();
+                }, 6000);
+            }
+        }
+
+        function lanzarConfeti() {
+            let intervalo = setInterval(crearConfeti, 200);
+            setTimeout(() => clearInterval(intervalo), 3000);
+        }
+
+        function escribirTexto(text, elemento, callback) {
+            let i = 0;
+            elemento.innerHTML = '<span class="corazon">&hearts;</span> ';
+            nombre.style.borderRight = '4px solid #FF69B4'; // Mostrar cursor
+            function escribir() {
+                if (i < text.length) {
+                    elemento.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(escribir, 100);
+                } else {
+                    elemento.innerHTML += ' <span class="corazon">&hearts;</span>';
+                    nombre.style.borderRight = 'none'; // Ocultar cursor
+                    if (callback) callback();
+                }
+            }
+            escribir();
+        }
+        boton.addEventListener("click", () => {
+            carta.style.display = "block";
+            boton.style.display = "none";
+            setTimeout(() => {
+                carta.style.height = "350px";
+                setTimeout(() => {
+                    botonEmergencia.style.display = "block";
+                }, 500);
+            }, 100);
+
+            lanzarConfeti();
+        });
+
+        botonEmergencia.addEventListener("mousedown", () => {
+            botonEmergencia.classList.add("presionado");
+            lanzarConfeti();
+
+            if (indice < nombres.length) {
+                escribirTexto(nombres[indice], nombre);
+                indice++;
+            } else {
+                // Cuando se terminó la lista de nombres, mostrar el mensaje final
+                nombre.style.borderRight = 'none'; // Ocultar cursor
+                nombre.innerHTML = `<div style="font-size: 40px; color: #964B00; line-height: 1.4; max-width: 600px; margin: 0 auto;">
+                    Feliz Dia de las Madres<br>
+                    Son el corazon de nuestra familia
+                </div>`;
+                botonEmergencia.style.display = "none";
+            }
+        });
+
+        botonEmergencia.addEventListener("mouseup", () => {
+            botonEmergencia.classList.remove("presionado");
+        });
+    </script>
+</body>
+</html>
